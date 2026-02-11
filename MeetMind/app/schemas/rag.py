@@ -17,6 +17,7 @@ class ContextSnippet(BaseModel):
     type: str = Field(..., description="Type of content (transcript, decision, action_item, etc.)")
     meeting_id: str = Field(..., description="Source meeting ID")
     snippet: str = Field(..., description="Content snippet")
+    relevance_score: float = Field(..., description="Relevance score (0-1)", ge=0, le=1)
 
 
 class QueryResponse(BaseModel):
