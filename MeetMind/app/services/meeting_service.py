@@ -9,6 +9,7 @@ from app.models.meeting import User, Meeting
 from app.services.audio_service import AudioService
 from app.services.whisper_service import WhisperService
 from app.services.langgraph_service import LangGraphService
+from app.services.vector_store_service import VectorStoreService
 
 
 class MeetingService:
@@ -19,6 +20,13 @@ class MeetingService:
         self.audio_service = AudioService()
         self.whisper_service = WhisperService()
         self.langgraph_service = LangGraphService()
+        
+        # Initialize vector store (optional - graceful degradation if not configured)
+        try:
+            self.vector_store = VectorStoreService()
+        except Exception as e:
+            print(f"Warning: Vector store not available: {e}")
+            self.vector_store = None
     
     def get_or_create_user(self, db: Session, user_id: str) -> User:
         """
@@ -92,6 +100,23 @@ class MeetingService:
             db.refresh(meeting)
             
             print(f"Meeting created successfully: {meeting.id}")
+            
+            # Step 6: Index in vector store for RAG (if available)
+            if self.vector_store:
+                try:
+                    self.vector_store.index_meeting(
+                        user_id=user_id,
+                        meeting_id=meeting.id,
+                        transcript=transcript,
+                        summary=analysis["summary"],
+                        decisions=analysis["decisions"],
+                        action_items=analysis["action_items"],
+                        key_points=analysis["key_points"]
+                    )
+                    print(f"✓ Meeting indexed in vector store")
+                except Exception as e:
+                    # Log error but don't fail the upload
+                    print(f"⚠ Vector store indexing failed: {e}")
             
             return meeting
             

@@ -7,6 +7,7 @@ from contextlib import asynccontextmanager
 from app.config import settings
 from app.database import init_db
 from app.routers import meetings_router
+from app.routers import rag
 
 
 @asynccontextmanager
@@ -43,6 +44,7 @@ app.add_middleware(
 
 # Include routers
 app.include_router(meetings_router)
+app.include_router(rag.router)
 
 
 @app.get("/")

@@ -41,6 +41,40 @@ class Settings(BaseSettings):
         description="Debug mode"
     )
     
+    # Chroma Cloud Configuration
+    chroma_api_key: Optional[str] = Field(
+        default=None,
+        description="Chroma Cloud API key"
+    )
+    chroma_tenant: str = Field(
+        default="default_tenant",
+        description="Chroma Cloud tenant ID"
+    )
+    chroma_database: str = Field(
+        default="default_database",
+        description="Chroma Cloud database name"
+    )
+    
+    # Embedding Configuration
+    embedding_model: str = Field(
+        default="text-embedding-3-small",
+        description="OpenAI embedding model"
+    )
+    
+    # RAG Configuration
+    rag_top_k: int = Field(
+        default=5,
+        description="Number of relevant chunks to retrieve"
+    )
+    rag_chunk_size: int = Field(
+        default=1000,
+        description="Text chunk size for embeddings"
+    )
+    rag_chunk_overlap: int = Field(
+        default=200,
+        description="Overlap between chunks"
+    )
+    
     class Config:
         env_file = ".env"
         case_sensitive = False
